@@ -1,0 +1,6 @@
+[29/May/2020 06:36:22] INFO [django.utils.autoreload:597] Watching for file changes with StatReloader
+[29/May/2020 06:36:46] INFO [django.utils.autoreload:217] /Users/colvet/Documents/myapp/MyApplication/Api/JsonTest.py changed, reloading.
+[29/May/2020 06:36:46] INFO [django.utils.autoreload:597] Watching for file changes with StatReloader
+[29/May/2020 06:37:01] INFO [django.utils.autoreload:217] /Users/colvet/Documents/myapp/MyApplication/Api/JsonTest.py changed, reloading.
+[29/May/2020 06:37:01] INFO [django.utils.autoreload:597] Watching for file changes with StatReloader
+[29/May/2020 06:37:36] INFO [django.utils.autoreload:217] /Users/colvet/Documents/myapp/myapp/settings.py changed, reloading.
