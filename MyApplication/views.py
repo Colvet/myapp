@@ -7,3 +7,5 @@ import json
 
 from MyApplication.MongoDbManager import MongoDbManager
 
+from django.http import HttpResponseRedirect
+from django.shortcuts import render

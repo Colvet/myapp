@@ -5,14 +5,19 @@ import pymongo
 from MyApplication.MongoDbManager import MongoDbManager
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
 
-
+import csv
 from rest_framework.parsers import JSONParser
 from MyApplication.serializers import UserSerializer
 from django.http.response import JsonResponse
 
-import MyApplication.forms
+from MyApplication.forms import DocumentForm
+from MyApplication.models import Document
 
+from django.shortcuts import redirect, render
+
+import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
 
@@ -55,6 +60,10 @@ def add_user(request):
 
 
     if request.method == 'POST':
+        logger.warning("=========")
+        logger.warning(request)
+        logger.warning("==========")
+
         user_data = JSONParser().parse(request)
         user_serializer = UserSerializer(data=user_data)
         if user_serializer.is_valid():
@@ -74,33 +83,78 @@ def add_user(request):
         return HttpResponse(UserData)
 
 
-@csrf_exempt
-def uploadFile(request):
-    if request.method == 'POST':
-        # form = MyApplication.forms.uploadFileForm(request.POST)
-        form = MyApplication.forms.NameForm(request.POST)
-
-        # logger.warning(form)
-        # logger.warning("asdfasdfasdf")
-        logger.warning(form)
-        if form.is_valid():
-            form.save()
-            return HttpResponse(True)
-        else:
-            return HttpResponse(False)
-        #     logger.warning("file upload success")
-        #     return HttpResponse(True)
-        # else:
-        #     logger.warning("fail")
-        #     return HttpResponse(False)
-
-
-
-
+# @csrf_exempt
+# def uploadFile(APIView):
+#         parser_classes = (MultiPartParser, FormParser)
+#
+#         # file_serializer = FileSerializer(data=request.data)
+#
+#         # file_data = csv_file.read().decode("utf-8")
+#
+#         parser_classes = (MultiPartParser, FormParser)
+#
+#         def post(self, request, *args, **kwargs):
+#             file_serializer = FileSerializer(data=request.data)
+#             if file_serializer.is_valid():
+#                 file_serializer.save()
+#                 return HttpResponse(file_serializer.data, status=status.HTTP_201_CREATED)
+#             else:
+#                 return HttpResponse(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # def fileupload(request):
 #     if request.method == 'POST':
 #         file =
+
+
+@csrf_exempt
+def my_view(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            newdoc = Document(docfile=request.FILES['docfile'])
+
+            uploadFile=request.FILES['docfile']
+            if uploadFile.name.find('csv') < 0:
+                message = "파일형식이 잘못되었습니다"
+
+                return JsonResponse({"message": message})
+
+            csv_file = pd.read_csv(uploadFile, encoding='utf8')
+            df = pd.DataFrame(csv_file)
+            # csv_file.to_json()
+            print(df)
+            print(df.dtypes)
+            print(df.describe())
+            print(df.to_numeric())
+
+            # newdoc.save()
+
+
+
+            return redirect('my-view')
+            # return HttpResponse(True)
+        else:
+            message = 'The form is not valid. Fix the following error:'
+    else:
+        form = DocumentForm()  # An empty, unbound form
+
+    # Load documents for the list page
+    documents = Document.objects.all()
+
+    # Render list page with the documents and the form
+    context = {'documents': documents, 'form': form}
+    return render(request, 'list.html', context)
+
+
+
+
+
+
+
+
+
+
 
 def all_users(request):
     def get():
